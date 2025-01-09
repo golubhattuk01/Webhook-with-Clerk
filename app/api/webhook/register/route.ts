@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
 
   async function sendMail(subject: string, text: string, data: WebhookEvent['data']) {
-    const customer = (data as UserJSON).email_addresses[0].email_address;
+    let customer = (data as UserJSON).email_addresses[0].email_address;
   
     if (!customer || !subject || !text) {
       return NextResponse.json({ message: 'missing values' });
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     }
     if (customer === 'example@example.org') {
       console.log('Welcome Clerk');
-      customer = process.env.T_EMAIL;
+      customer = process.env.T_EMAIL as string;
       subject = 'TEMP SUBJECT';
       text = 'TEMP TEXT JUST FOR TESTING PURPOSE';
     }
