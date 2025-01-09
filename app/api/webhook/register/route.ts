@@ -3,7 +3,6 @@ import { headers } from 'next/headers';
 import { UserJSON, WebhookEvent } from '@clerk/nextjs/server';
 import nodemailer from 'nodemailer';
 import { NextResponse } from 'next/server';
-import { User } from 'lucide-react';
 
 
 export async function POST(req: Request) {
@@ -18,11 +17,9 @@ export async function POST(req: Request) {
   });
 
 
-  async function sendMail(subject: string, text: string, data :WebhookEvent['data']) {
-    let c1 = data as UserJSON;
-    let c2 = c1.email_addresses;
-    let customer = c2[0].email_address;
-
+  async function sendMail(subject: string, text: string, data: WebhookEvent['data']) {
+    const customer = (data as UserJSON).email_addresses[0].email_address;
+  
     if (!customer || !subject || !text) {
       return NextResponse.json({ message: 'missing values' });
     }
@@ -32,18 +29,18 @@ export async function POST(req: Request) {
     }
     if (customer === 'example@example.org') {
       console.log('Welcome Clerk');
-      // customer = process.env.T_EMAIL;
+      customer = process.env.T_EMAIL;
       subject = 'TEMP SUBJECT';
       text = 'TEMP TEXT JUST FOR TESTING PURPOSE';
     }
-
+  
     const receiver = {
       from: process.env.EMAIL,
       to: customer,
       subject,
       text,
     };
-
+  
     try {
       const ans = await auth.sendMail(receiver);
       if (ans) {
@@ -54,7 +51,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: 'Email not sent' });
     }
   }
-
+  
   const SIGNING_SECRET = process.env.SIGNING_SECRET;
 
   if (!SIGNING_SECRET) {
@@ -115,6 +112,5 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  const userId = 10;
   return NextResponse.json({ message: 'This is a testing route' });
 }
