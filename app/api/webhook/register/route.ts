@@ -1,12 +1,10 @@
 import { Webhook } from 'svix';
 import { headers } from 'next/headers';
-import { WebhookEvent } from '@clerk/nextjs/server';
+import { UserJSON, WebhookEvent } from '@clerk/nextjs/server';
 import nodemailer from 'nodemailer';
 import { NextResponse } from 'next/server';
+import { User } from 'lucide-react';
 
-// interface UserData {
-//   email_addresses: { email_address: string }[];
-// }
 
 export async function POST(req: Request) {
   const auth = nodemailer.createTransport({
@@ -19,12 +17,11 @@ export async function POST(req: Request) {
     },
   });
 
-  async function sendMail(subject: string, text: string, data: unknown) {
-    if (typeof data !== 'object' || data === null) {
-      throw new Error('Invalid data type');
-    }
-  
-    let customer = (data as any).email_addresses?.[0]?.email_address;
+
+  async function sendMail(subject: string, text: string, data :WebhookEvent['data']) {
+    let c1 = data as UserJSON;
+    let c2 = c1.email_addresses;
+    let customer = c2[0].email_address;
 
     if (!customer || !subject || !text) {
       return NextResponse.json({ message: 'missing values' });
@@ -35,7 +32,7 @@ export async function POST(req: Request) {
     }
     if (customer === 'example@example.org') {
       console.log('Welcome Clerk');
-      customer = process.env.T_EMAIL;
+      // customer = process.env.T_EMAIL;
       subject = 'TEMP SUBJECT';
       text = 'TEMP TEXT JUST FOR TESTING PURPOSE';
     }
@@ -98,7 +95,7 @@ export async function POST(req: Request) {
   }
 
   const eventType = evt.type;
-  const { data } = evt;
+  const { data  } = evt;
 
   const text: string = `Thank you for registering with us. 
   We are excited to have you on board. 
