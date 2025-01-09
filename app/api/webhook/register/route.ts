@@ -94,13 +94,13 @@ export async function POST(req: Request) {
   const eventType = evt.type;
   const { data  } = evt;
 
-  const text: string = `Thank you for registering with us. 
+  let text: string = `Thank you for registering with us. 
   We are excited to have you on board. 
   Please let us know if you have any queries. 
   We are here to help you. Have a great day ahead
   
   Gaurav Bhatt`;
-  const subject: string = 'Welcome to the family';
+  let subject: string = 'Welcome to the family';
 
   if (eventType === 'user.created') {
     const val = await sendMail(subject, text, data);
